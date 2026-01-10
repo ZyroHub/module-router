@@ -4,7 +4,7 @@ export class RouterMiddleware {
 	static options: any;
 
 	static configure<TConfigure extends (typeof RouterMiddleware)['options']>(
-		this: RouterMiddlewareClass,
+		this: RouterMiddlewareClass & { options: TConfigure },
 		options: TConfigure
 	): MountedMiddleware<TConfigure> {
 		return {
