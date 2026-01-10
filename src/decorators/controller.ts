@@ -1,4 +1,3 @@
-import { MiddlewareVariant, MountedMiddleware } from '@/components/Middleware.js';
 import {
 	ROUTER_CONTROLLER_OPTIONS_METADATA_KEY,
 	ROUTER_CONTROLLER_ROLE,
@@ -8,18 +7,14 @@ import {
 } from '@/constants/router.js';
 import { Terminal } from '@zyrohub/utilities';
 
-import { MiddlewareUtils } from '@/utils/Middleware.js';
+import { MiddlewareUtils } from '@/utils/index.js';
+
+import { MiddlewareVariant, MountedController, MountedMiddleware } from '@/types/index.js';
 
 export interface ControllerOptions {
 	path?: string;
 	children?: { new (...args: any[]): any }[];
 	middlewares?: MiddlewareVariant[];
-}
-
-export interface MountedControllerOptions {
-	path: string;
-	children: { new (...args: any[]): any }[];
-	middlewares: MountedMiddleware[];
 }
 
 export function Controller(options: ControllerOptions) {
@@ -55,7 +50,7 @@ export function Controller(options: ControllerOptions) {
 
 		Reflect.defineMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, mergedMiddlewares, target);
 
-		const mountedControllerOptions: MountedControllerOptions = {
+		const mountedControllerOptions: MountedController = {
 			path: options.path || '/',
 			children: options.children || [],
 			middlewares: mountedControllerMiddlewares

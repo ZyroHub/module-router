@@ -1,13 +1,14 @@
-import { MiddlewareVariant, MountedMiddleware, RouterMiddlewareClass } from '@/components/Middleware.js';
 import {
 	ROUTER_LOAD_ERROR_METADATA_KEY,
 	ROUTER_MIDDLEWARE_ROLE,
 	ROUTER_MIDDLEWARES_METADATA_KEY,
 	ROUTER_ROLE_METADATA_KEY
 } from '@/constants/index.js';
-import { Ansi, Terminal } from '@zyrohub/utilities';
+import { Terminal } from '@zyrohub/utilities';
 
 import { MiddlewareUtils } from '@/utils/index.js';
+
+import { MiddlewareVariant, MountedMiddleware } from '@/types/index.js';
 
 export function Middleware() {
 	return (target: { new (...args: any[]): {} }) => {

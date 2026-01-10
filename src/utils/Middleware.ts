@@ -1,5 +1,6 @@
-import { MiddlewareVariant, MountedMiddleware, RouterMiddlewareClass } from '@/components/Middleware.js';
 import { ROUTER_MIDDLEWARES_METADATA_KEY } from '@/constants/router.js';
+
+import { MiddlewareVariant, MountedMiddleware, RouterMiddlewareClass } from '@/types/index.js';
 
 export class MiddlewareUtils {
 	static processMiddlewareVariant(variant: MiddlewareVariant): MountedMiddleware {
