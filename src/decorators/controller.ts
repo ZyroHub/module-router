@@ -1,14 +1,25 @@
 import { MiddlewareVariant, MountedMiddleware } from '@/components/Middleware.js';
 import {
+	ROUTER_CONTROLLER_OPTIONS_METADATA_KEY,
 	ROUTER_CONTROLLER_ROLE,
+	ROUTER_LOAD_ERROR_METADATA_KEY,
 	ROUTER_MIDDLEWARES_METADATA_KEY,
 	ROUTER_ROLE_METADATA_KEY
 } from '@/constants/router.js';
+import { Terminal } from '@zyrohub/utilities';
+
+import { MiddlewareUtils } from '@/utils/Middleware.js';
 
 export interface ControllerOptions {
 	path?: string;
 	children?: { new (...args: any[]): any }[];
 	middlewares?: MiddlewareVariant[];
+}
+
+export interface MountedControllerOptions {
+	path: string;
+	children: { new (...args: any[]): any }[];
+	middlewares: MountedMiddleware[];
 }
 
 export function Controller(options: ControllerOptions) {
@@ -19,5 +30,37 @@ export function Controller(options: ControllerOptions) {
 			Reflect.getMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, target.constructor) || [];
 
 		const controllerMiddlewares = options.middlewares || [];
+		const mountedControllerMiddlewares: MountedMiddleware[] = [];
+
+		for (const controllerMiddleware of controllerMiddlewares) {
+			try {
+				const mountedMiddleware = MiddlewareUtils.processMiddlewareVariant(controllerMiddleware);
+
+				mountedMiddleware.isPrimary = true;
+
+				mountedControllerMiddlewares.push(mountedMiddleware);
+			} catch (error: any) {
+				Reflect.defineMetadata(ROUTER_LOAD_ERROR_METADATA_KEY, true, target.constructor);
+
+				if (error instanceof Error) Terminal.error('ROUTER', error.message);
+				else
+					Terminal.error(
+						'ROUTER',
+						`An unknown error occurred while applying middleware. (${target.name} - ${controllerMiddleware})`
+					);
+			}
+		}
+
+		const mergedMiddlewares = [...mountedControllerMiddlewares, ...middlewareList];
+
+		Reflect.defineMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, mergedMiddlewares, target);
+
+		const mountedControllerOptions: MountedControllerOptions = {
+			path: options.path || '/',
+			children: options.children || [],
+			middlewares: mountedControllerMiddlewares
+		};
+
+		Reflect.defineMetadata(ROUTER_CONTROLLER_OPTIONS_METADATA_KEY, mountedControllerOptions, target);
 	};
 }

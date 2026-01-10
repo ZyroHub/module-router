@@ -3,7 +3,11 @@ import { Core, BaseModule, Module } from '@zyrohub/core';
 import { RouterMiddleware } from './components/Middleware.js';
 
 export interface RouterModuleOptions {
-	path?: string;
+	loader?: {
+		path: string;
+		pattern?: RegExp;
+	};
+
 	controllers?: any[];
 }
 

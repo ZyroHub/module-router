@@ -31,7 +31,11 @@ export function UseMiddleware(...middlewares: MiddlewareVariant[]) {
 				Reflect.defineMetadata(ROUTER_LOAD_ERROR_METADATA_KEY, true, target.constructor);
 
 				if (error instanceof Error) Terminal.error('ROUTER', error.message);
-				else Terminal.error('ROUTER', 'An unknown error occurred while applying middleware.');
+				else
+					Terminal.error(
+						'ROUTER',
+						`An unknown error occurred while applying middleware. (${target.constructor.name} - ${middleware})`
+					);
 			}
 		}
 
