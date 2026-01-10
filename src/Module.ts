@@ -1,15 +1,21 @@
-import { Core, BaseModule } from '@zyrohub/core';
+import { Core, BaseModule, Module } from '@zyrohub/core';
 
-export interface RouterModuleOptions {};
+export interface RouterModuleOptions {
+	path?: string;
+	controllers?: any[];
+}
 
+@Module()
 export class RouterModule extends BaseModule {
 	static options: RouterModuleOptions;
+
+	controllers: any[] = [];
 
 	constructor() {
 		super();
 	}
 
-	async init(core: Core, options: RouterModuleOptions) {
-
-	}
+	async init(data: { core: Core; options: RouterModuleOptions }) {}
 }
+
+export default { RouterModule };
