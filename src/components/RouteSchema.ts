@@ -18,7 +18,24 @@ export interface RouteSchemaOptions<
 	meta?: RouteSchemaMeta;
 }
 
+export interface RouteSchemaContext<
+	SRequest = any,
+	SResponse = any,
+	SBody extends ValidatorSchema = ValidatorSchema,
+	SQuery extends ValidatorSchema = ValidatorSchema,
+	SParams extends ValidatorSchema = ValidatorSchema
+> {
+	request: SRequest;
+	response: SResponse;
+
+	body: SBody extends ValidatorSchema ? InferSchemaType<SBody> : undefined;
+	query: SQuery extends ValidatorSchema ? InferSchemaType<SQuery> : undefined;
+	params: SParams extends ValidatorSchema ? InferSchemaType<SParams> : undefined;
+}
+
 export class RouteSchema<
+	SRequest = any,
+	SResponse = any,
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
 	SParams extends ValidatorSchema = ValidatorSchema
@@ -29,13 +46,15 @@ export class RouteSchema<
 		params?: SParams;
 	} = {};
 
-	input: {
-		body: SBody extends ValidatorSchema ? InferSchemaType<SBody> : undefined;
-		query: SQuery extends ValidatorSchema ? InferSchemaType<SQuery> : undefined;
-		params: SParams extends ValidatorSchema ? InferSchemaType<SParams> : undefined;
-	} = {} as RouteSchema['input'];
-
 	meta: RouteSchemaMeta = {};
+
+	context: RouteSchemaContext<SRequest, SResponse, SBody, SQuery, SParams> = {} as RouteSchemaContext<
+		SRequest,
+		SResponse,
+		SBody,
+		SQuery,
+		SParams
+	>;
 
 	constructor(options: RouteSchemaOptions<SBody, SQuery, SParams> = {}) {
 		if (options.body) this.validators.body = options.body;
@@ -43,5 +62,51 @@ export class RouteSchema<
 		if (options.params) this.validators.params = options.params;
 
 		if (options.meta) this.meta = options.meta;
+	}
+
+	static createBase<
+		SRequest = any,
+		SResponse = any,
+		SBody extends ValidatorSchema = ValidatorSchema,
+		SQuery extends ValidatorSchema = ValidatorSchema,
+		SParams extends ValidatorSchema = ValidatorSchema
+	>(options: RouteSchemaOptions<SBody, SQuery, SParams> = {}) {
+		return class Base<
+			IBody extends ValidatorSchema = ValidatorSchema,
+			IQuery extends ValidatorSchema = ValidatorSchema,
+			IParams extends ValidatorSchema = ValidatorSchema
+		> extends RouteSchema<SRequest, SResponse, SBody & IBody, SQuery & IQuery, SParams & IParams> {
+			constructor(input: RouteSchemaOptions<IBody, IQuery, IParams> = {}) {
+				super({
+					...((input.body || options.body) && {
+						body: {
+							...options.body,
+							...input.body
+						} as SBody & IBody
+					}),
+
+					...((input.query || options.query) && {
+						query: {
+							...options.query,
+							...input.query
+						} as SQuery & IQuery
+					}),
+
+					...((input.params || options.params) && {
+						params: {
+							...options.params,
+							...input.params
+						} as SParams & IParams
+					}),
+
+					...((input.meta || options.meta) && {
+						meta: {
+							...options.meta,
+							...input.meta
+						}
+					})
+				});
+			}
+		};
 	}
 }
