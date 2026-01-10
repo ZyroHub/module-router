@@ -29,7 +29,7 @@
 	"keywords": [],
 	"license": "MIT",
 	"dependencies": {
-		"@zyrohub/utilities": "^1.0.12"
+		"@zyrohub/utilities": "^1.0.14"
 	},
 	"devDependencies": {
 		"@types/node": "^25.0.3",

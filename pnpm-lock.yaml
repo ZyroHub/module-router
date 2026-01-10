@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@zyrohub/utilities':
-        specifier: ^1.0.12
-        version: 1.0.12
+        specifier: ^1.0.14
+        version: 1.0.14(zod@4.3.5)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -20,7 +20,7 @@ importers:
         version: 1.0.6(prettier@3.6.2)
       '@zyrohub/core':
         specifier: ^1.1.4
-        version: 1.1.4
+        version: 1.1.4(zod@4.3.5)
       '@zyrohub/ts-runner':
         specifier: ^0.0.3
         version: 0.0.3
@@ -212,8 +212,22 @@ packages:
     resolution: {integrity: sha512-pya6vY7hNJW8o2o6745EeqMdHbm06DxSlHyQxrntLW2OyhMPkNmt07tHGqwm9Z+xI+pViRWRpqhKwrm5pLU3Qw==}
     hasBin: true
 
-  '@zyrohub/utilities@1.0.12':
-    resolution: {integrity: sha512-o4twm4UwDPWuwbU4uAlw5vm9K2jTlwzwh9C5ToW+VJBUm7CSZrZxRNbjqUCUE1bAR2sqDQMyoSbZbGAZKC9jkg==}
+  '@zyrohub/utilities@1.0.14':
+    resolution: {integrity: sha512-QQEkDsvQujfGNddgt/L4GffAHkZIWT4NsrN6UZWd0x0MDaIWm8zydhEyuLNa+6YvvsVcmUuKKRRF9IVNMHDSkQ==}
+    peerDependencies:
+      class-transformer: ^0.5.1
+      class-validator: ^0.14.3
+      yup: ^1.7.1
+      zod: ^4.3.5
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+      yup:
+        optional: true
+      zod:
+        optional: true
 
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
@@ -425,6 +439,9 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
+  zod@4.3.5:
+    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
+
 snapshots:
 
   '@babel/code-frame@7.27.1':
@@ -584,10 +601,15 @@ snapshots:
       - supports-color
       - svelte
 
-  '@zyrohub/core@1.1.4':
+  '@zyrohub/core@1.1.4(zod@4.3.5)':
     dependencies:
-      '@zyrohub/utilities': 1.0.12
+      '@zyrohub/utilities': 1.0.14(zod@4.3.5)
       reflect-metadata: 0.2.2
+    transitivePeerDependencies:
+      - class-transformer
+      - class-validator
+      - yup
+      - zod
 
   '@zyrohub/ts-runner@0.0.3':
     dependencies:
@@ -596,7 +618,9 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@zyrohub/utilities@1.0.12': {}
+  '@zyrohub/utilities@1.0.14(zod@4.3.5)':
+    optionalDependencies:
+      zod: 4.3.5
 
   anymatch@3.1.3:
     dependencies:
@@ -779,3 +803,6 @@ snapshots:
   typescript@5.9.3: {}
 
   undici-types@7.16.0: {}
+
+  zod@4.3.5:
+    optional: true
