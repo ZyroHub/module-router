@@ -1,3 +1,5 @@
+import { HttpResponse } from './HttpResponse.js';
+
 export type RouterMiddlewareClass<T extends RouterMiddleware = RouterMiddleware> = {
 	new (...args: any[]): T;
 	configure: (options: any) => MountedMiddleware<any>;
@@ -22,5 +24,5 @@ export class RouterMiddleware {
 		};
 	}
 
-	async execute(context: any, options: any) {}
+	async execute(context: any, options: any): Promise<HttpResponse | void> {}
 }
