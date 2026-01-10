@@ -1,4 +1,4 @@
-import { MountedMiddleware, RouterMiddlewareClass } from '@/components/Middleware.js';
+import { MiddlewareVariant, MountedMiddleware, RouterMiddlewareClass } from '@/components/Middleware.js';
 import {
 	ROUTER_LOAD_ERROR_METADATA_KEY,
 	ROUTER_MIDDLEWARE_ROLE,
@@ -7,44 +7,31 @@ import {
 } from '@/constants/index.js';
 import { Ansi, Terminal } from '@zyrohub/utilities';
 
+import { MiddlewareUtils } from '@/utils/index.js';
+
 export function Middleware() {
 	return (target: { new (...args: any[]): {} }) => {
 		Reflect.defineMetadata(ROUTER_ROLE_METADATA_KEY, ROUTER_MIDDLEWARE_ROLE, target);
 	};
 }
 
-export function UseMiddleware(...middlewares: (RouterMiddlewareClass | MountedMiddleware)[]) {
-	return function (target: any) {
+export function UseMiddleware(...middlewares: MiddlewareVariant[]) {
+	return function (target: any, propertyKey: string) {
 		const middlewareList: MountedMiddleware[] =
 			Reflect.getMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, target.constructor) || [];
 
 		for (const middleware of middlewares) {
-			let MiddlewareConstructor: RouterMiddlewareClass;
+			try {
+				const mountedMiddleware = MiddlewareUtils.processMiddlewareVariant(middleware);
 
-			if (typeof middleware === 'function') {
-				MiddlewareConstructor = middleware;
-			} else {
-				MiddlewareConstructor = middleware.constructor;
-			}
+				mountedMiddleware.handlerName = propertyKey;
 
-			const isMiddleware = Reflect.getMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, MiddlewareConstructor);
+				middlewareList.push(mountedMiddleware);
+			} catch (error: any) {
+				Reflect.defineMetadata(ROUTER_LOAD_ERROR_METADATA_KEY, true, target.constructor);
 
-			if (!isMiddleware) {
-				Terminal.error(
-					'CORE',
-					`The class ${Ansi.yellow(
-						MiddlewareConstructor.name
-					)} is not a valid middleware. Did you forget the ${Ansi.cyan('@Middleware()')} decorator?`
-				);
-
-				Reflect.defineMetadata(ROUTER_LOAD_ERROR_METADATA_KEY, true, target);
-				return;
-			}
-
-			if (typeof middleware === 'function') {
-				middlewareList.push((middleware as RouterMiddlewareClass).configure({}));
-			} else {
-				middlewareList.push(middleware as MountedMiddleware);
+				if (error instanceof Error) Terminal.error('ROUTER', error.message);
+				else Terminal.error('ROUTER', 'An unknown error occurred while applying middleware.');
 			}
 		}
 

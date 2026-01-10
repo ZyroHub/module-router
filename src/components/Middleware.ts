@@ -7,9 +7,11 @@ export type RouterMiddlewareClass<T extends RouterMiddleware = RouterMiddleware>
 
 export type MountedMiddleware<T = any> = {
 	constructor: RouterMiddlewareClass<any>;
-	instance?: RouterMiddleware;
 	options: T;
+	handlerName?: string;
 };
+
+export type MiddlewareVariant = RouterMiddlewareClass | MountedMiddleware;
 
 export class RouterMiddleware {
 	static options: any;

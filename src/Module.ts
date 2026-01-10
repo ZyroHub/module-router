@@ -1,5 +1,7 @@
 import { Core, BaseModule, Module } from '@zyrohub/core';
 
+import { RouterMiddleware } from './components/Middleware.js';
+
 export interface RouterModuleOptions {
 	path?: string;
 	controllers?: any[];
@@ -10,12 +12,15 @@ export class RouterModule extends BaseModule {
 	static options: RouterModuleOptions;
 
 	controllers: any[] = [];
+	middlewares: (typeof RouterMiddleware)[] = [];
 
 	constructor() {
 		super();
 	}
 
-	async init(data: { core: Core; options: RouterModuleOptions }) {}
+	async init(data: { core: Core; options: RouterModuleOptions }) {
+		// this.core?.storage?.set('routes', []);
+	}
 }
 
 export default { RouterModule };
