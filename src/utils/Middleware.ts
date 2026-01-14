@@ -1,4 +1,4 @@
-import { ROUTER_MIDDLEWARES_METADATA_KEY } from '@/constants/router.js';
+import { ROUTER_MIDDLEWARE_ROLE, ROUTER_ROLE_METADATA_KEY } from '@/constants/router.js';
 
 import { MiddlewareVariant, MountedMiddleware, RouterMiddlewareClass } from '@/types/index.js';
 
@@ -12,9 +12,9 @@ export class MiddlewareUtils {
 			MiddlewareConstructor = variant.constructor;
 		}
 
-		const isMiddleware = Reflect.getMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, MiddlewareConstructor);
+		const middlewareRole: string = Reflect.getMetadata(ROUTER_ROLE_METADATA_KEY, MiddlewareConstructor);
 
-		if (!isMiddleware)
+		if (middlewareRole !== ROUTER_MIDDLEWARE_ROLE)
 			throw new Error(
 				`The class ${MiddlewareConstructor.name} is not a valid middleware. Did you forget the @Middleware() decorator?`
 			);

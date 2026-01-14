@@ -1,6 +1,7 @@
 import { RouteSchema } from '@/components/RouteSchema.js';
-import { ROUTER_ROUTES_METADATA_KEY } from '@/constants/router.js';
+import { ROUTER_MIDDLEWARES_METADATA_KEY, ROUTER_ROUTES_METADATA_KEY } from '@/constants/router.js';
 
+import { MountedMiddleware } from '@/types/middleware.js';
 import { MountedRoute, RouteMethod } from '@/types/route.js';
 
 export class RouteUtils {
@@ -8,20 +9,39 @@ export class RouteUtils {
 		method: RouteMethod,
 		path: string,
 		handlerName: string,
-		constructor: { new (): any },
+		controller: { new (): any },
 		schema?: RouteSchema
 	) {
-		const routesMetadata: MountedRoute[] = Reflect.getMetadata(ROUTER_ROUTES_METADATA_KEY, constructor) || [];
+		const controllerRoutesMetadata: MountedRoute[] =
+			Reflect.getMetadata(ROUTER_ROUTES_METADATA_KEY, controller) || [];
+
+		const controllerMiddlewaresMetadata: MountedMiddleware[] =
+			Reflect.getMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, controller) || [];
+
+		const routeMiddlewares = controllerMiddlewaresMetadata
+			.filter(middleware => middleware.handlerName === handlerName)
+			.reverse()
+			.map(middleware => {
+				middleware.handlerName = undefined;
+
+				return middleware;
+			});
 
 		const mountedRoute: MountedRoute = {
 			method,
 			path,
 			handlerName,
-			schema
+			schema,
+			middlewares: routeMiddlewares
 		};
 
-		routesMetadata.push(mountedRoute);
+		controllerRoutesMetadata.push(mountedRoute);
 
-		Reflect.defineMetadata(ROUTER_ROUTES_METADATA_KEY, routesMetadata, constructor);
+		const filteredControllerMiddlewaresMetadata = controllerMiddlewaresMetadata.filter(
+			middleware => middleware.handlerName !== handlerName
+		);
+		Reflect.defineMetadata(ROUTER_MIDDLEWARES_METADATA_KEY, filteredControllerMiddlewaresMetadata, controller);
+
+		Reflect.defineMetadata(ROUTER_ROUTES_METADATA_KEY, controllerRoutesMetadata, controller);
 	}
 }

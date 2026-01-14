@@ -9,7 +9,7 @@ export interface HttpResponseOptions {
 
 export class HttpResponse {
 	success: HttpResponseOptions['success'];
-	status: NonNullable<HttpResponseOptions['status']>;
+	status: number;
 	code?: HttpResponseOptions['code'];
 	data?: HttpResponseOptions['data'];
 

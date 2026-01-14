@@ -1,7 +1,13 @@
 import { MountedMiddleware } from './middleware.js';
+import { MountedRoute } from './route.js';
 
 export interface MountedController {
 	path: string;
-	children: { new (...args: any[]): any }[];
 	middlewares: MountedMiddleware[];
+	constructor: { new (...args: any[]): {} };
+}
+
+export interface DefinedController {
+	data: MountedController;
+	routes: MountedRoute[];
 }

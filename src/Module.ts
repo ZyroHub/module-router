@@ -1,20 +1,22 @@
 import { Core, BaseModule, Module } from '@zyrohub/core';
-import { Ansi, Terminal } from '@zyrohub/utilities';
+import { Ansi, FileSystem, Terminal } from '@zyrohub/utilities';
 
-import { RouterMiddleware } from './components/Middleware.js';
 import {
-	ROUTER_CONTROLLER_OPTIONS_METADATA_KEY,
+	ROUTER_CONTROLLER_METADATA_KEY,
 	ROUTER_CONTROLLER_ROLE,
 	ROUTER_ROLE_METADATA_KEY,
 	ROUTER_ROUTES_METADATA_KEY
 } from './constants/router.js';
-import { MountedController } from './types/controller.js';
+import { DefinedController, MountedController } from './types/controller.js';
+import { MountedRoute } from './types/route.js';
+
+export interface RouterModuleLoaderOptions {
+	path: string;
+	pattern?: RegExp;
+}
 
 export interface RouterModuleOptions {
-	loader?: {
-		path: string;
-		pattern?: RegExp;
-	};
+	loader?: RouterModuleLoaderOptions;
 
 	controllers?: { new (): any }[];
 }
@@ -23,14 +25,13 @@ export interface RouterModuleOptions {
 export class RouterModule extends BaseModule {
 	static options: RouterModuleOptions;
 
-	controllers: { new (): any }[] = [];
-	middlewares: (typeof RouterMiddleware)[] = [];
+	controllers: DefinedController[] = [];
 
 	constructor() {
 		super();
 	}
 
-	private async handleLoadController(controller: { new (): any }) {
+	private async handleLoadController(controller: { new (): any }, parent?: MountedController) {
 		const controllerRole: string = Reflect.getMetadata(ROUTER_ROLE_METADATA_KEY, controller);
 
 		if (controllerRole !== ROUTER_CONTROLLER_ROLE) {
@@ -43,31 +44,78 @@ export class RouterModule extends BaseModule {
 			return;
 		}
 
-		const controllerOptions: MountedController = Reflect.getMetadata(
-			ROUTER_CONTROLLER_OPTIONS_METADATA_KEY,
-			controller
-		);
+		const controllerMetadata: MountedController = Reflect.getMetadata(ROUTER_CONTROLLER_METADATA_KEY, controller);
+		const controllerRoutes: MountedRoute[] = Reflect.getMetadata(ROUTER_ROUTES_METADATA_KEY, controller) || [];
 
-		console.log({
-			role: Reflect.getMetadata(ROUTER_ROLE_METADATA_KEY, controller),
-			data: Reflect.getMetadataKeys(controller),
-			options: Reflect.getMetadata(ROUTER_CONTROLLER_OPTIONS_METADATA_KEY, controller),
-			routes: Reflect.getMetadata(ROUTER_ROUTES_METADATA_KEY, controller)
-		});
+		const definedController: DefinedController = {
+			data: controllerMetadata,
+			routes: controllerRoutes
+		};
 
-		if (controllerOptions.children.length > 0) {
-			await this.handleLoadControllers(controllerOptions.children);
-		}
+		this.controllers.push(definedController);
 	}
 
 	private async handleLoadControllers(controllers: { new (): any }[]) {
+		let loadedControllersCount = 0;
+
 		for (const controller of controllers || []) {
 			await this.handleLoadController(controller);
+			loadedControllersCount++;
 		}
+
+		if (loadedControllersCount)
+			Terminal.info('ROUTER', `Successfully loaded ${Ansi.green(loadedControllersCount)} controllers.`);
+	}
+
+	private async handleLoadControllersFromLoader(loader_data: RouterModuleLoaderOptions) {
+		let loadedControllersCount = 0;
+
+		await FileSystem.loadFolder(
+			loader_data.path,
+			{
+				recursive: true,
+				filter_files: [loader_data.pattern || /\.ts$|\.js$/],
+				auto_import: true,
+				auto_default: false
+			},
+			undefined,
+			async file => {
+				if (!file.content) return;
+
+				for (const exportedItemKey of Object.keys(file.content)) {
+					const exportedItem = (file.content as any)[exportedItemKey];
+
+					const isClass =
+						typeof exportedItem === 'function' &&
+						/^class\s/.test(Function.prototype.toString.call(exportedItem));
+
+					if (!isClass) continue;
+
+					const controllerRole: string = Reflect.getMetadata(ROUTER_ROLE_METADATA_KEY, exportedItem);
+					if (controllerRole !== ROUTER_CONTROLLER_ROLE) continue;
+
+					await this.handleLoadController(exportedItem);
+
+					loadedControllersCount++;
+				}
+			}
+		);
+
+		if (loadedControllersCount)
+			Terminal.info(
+				'ROUTER',
+				`Successfully loaded ${Ansi.green(loadedControllersCount)} controllers from loader.`
+			);
 	}
 
 	async init(data: { core: Core; options: RouterModuleOptions }) {
-		await this.handleLoadControllers(data.options.controllers || []);
+		await Promise.all([
+			this.handleLoadControllers(data.options.controllers || []),
+			...(data.options.loader ? [this.handleLoadControllersFromLoader(data.options.loader)] : [])
+		]);
+
+		const existingControllers = data.core.storage.get('router.controllers') || [];
+		data.core.storage.set('router.controllers', [...existingControllers, ...this.controllers]);
 	}
 }
 
