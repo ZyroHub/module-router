@@ -30,3 +30,5 @@ export class MiddlewareUtils {
 		return mountedMiddleware;
 	}
 }
+
+export default { MiddlewareUtils };

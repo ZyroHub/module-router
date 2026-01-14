@@ -15,3 +15,5 @@ export class RouterMiddleware {
 
 	async execute(context: any, options: any) {}
 }
+
+export default { RouterMiddleware };

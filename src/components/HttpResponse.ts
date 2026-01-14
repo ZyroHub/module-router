@@ -56,3 +56,5 @@ export class HttpResponse {
 		};
 	}
 }
+
+export default { HttpResponse };

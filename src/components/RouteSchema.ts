@@ -110,3 +110,5 @@ export class RouteSchema<
 		};
 	}
 }
+
+export default { RouteSchema };

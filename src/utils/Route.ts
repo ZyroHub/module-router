@@ -45,3 +45,5 @@ export class RouteUtils {
 		Reflect.defineMetadata(ROUTER_ROUTES_METADATA_KEY, controllerRoutesMetadata, controller);
 	}
 }
+
+export default { RouteUtils };
