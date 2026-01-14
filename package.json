@@ -42,5 +42,10 @@
 	},
 	"peerDependencies": {
 		"@zyrohub/core": "^1.1.4"
+	},
+	"peerDependenciesMeta": {
+		"@zyrohub/core": {
+			"optional": false
+		}
 	}
 }
