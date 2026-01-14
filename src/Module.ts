@@ -4,6 +4,7 @@ import { Ansi, FileSystem, Terminal } from '@zyrohub/utilities';
 import {
 	ROUTER_CONTROLLER_METADATA_KEY,
 	ROUTER_CONTROLLER_ROLE,
+	ROUTER_CONTROLLERS_STORAGE_KEY,
 	ROUTER_ROLE_METADATA_KEY,
 	ROUTER_ROUTES_METADATA_KEY
 } from './constants/router.js';
@@ -114,8 +115,8 @@ export class RouterModule extends BaseModule {
 			...(data.options.loader ? [this.handleLoadControllersFromLoader(data.options.loader)] : [])
 		]);
 
-		const existingControllers = data.core.storage.get('router.controllers') || [];
-		data.core.storage.set('router.controllers', [...existingControllers, ...this.controllers]);
+		const existingControllers = data.core.storage.get(ROUTER_CONTROLLERS_STORAGE_KEY) || [];
+		data.core.storage.set(ROUTER_CONTROLLERS_STORAGE_KEY, [...existingControllers, ...this.controllers]);
 	}
 }
 

@@ -9,3 +9,5 @@ export const ROUTER_ROUTES_METADATA_KEY = 'zyro:controller:routes';
 export const ROUTER_CONTROLLER_METADATA_KEY = 'zyro:controller';
 
 export const ROUTER_LOAD_ERROR_METADATA_KEY = 'zyro:router:load:error';
+
+export const ROUTER_CONTROLLERS_STORAGE_KEY = 'router.controllers';
