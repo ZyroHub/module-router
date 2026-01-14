@@ -1,4 +1,4 @@
-import { MountedMiddleware, RouterMiddlewareClass } from '@/types/index.js';
+import { MountedMiddleware, RouterMiddlewareClass, RouterMiddlewareContext } from '@/types/index.js';
 
 export class RouterMiddleware {
 	static options: any;
@@ -13,7 +13,7 @@ export class RouterMiddleware {
 		};
 	}
 
-	async execute(context: any, options: any) {}
+	async execute(context: RouterMiddlewareContext, options: any) {}
 }
 
 export default { RouterMiddleware };

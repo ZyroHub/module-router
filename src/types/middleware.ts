@@ -13,3 +13,12 @@ export type MountedMiddleware<T = any> = {
 };
 
 export type MiddlewareVariant = RouterMiddlewareClass | MountedMiddleware;
+
+export interface RouterMiddlewareContext<SRequest = any, SResponse = any> {
+	request: SRequest;
+	response: SResponse;
+
+	body: any;
+	query: any;
+	params: any;
+}
