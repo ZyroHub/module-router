@@ -4,7 +4,7 @@ export interface HttpResponseOptions {
 	success: boolean;
 	status?: number | keyof typeof HttpStatusCodes;
 	code?: string;
-	data?: Record<string, any>;
+	data?: any;
 }
 
 export class HttpResponse {
