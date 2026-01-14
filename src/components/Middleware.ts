@@ -13,7 +13,7 @@ export class RouterMiddleware {
 		};
 	}
 
-	async execute(context: RouterMiddlewareContext, options: any) {}
+	async execute(context: RouterMiddlewareContext, options: any): Promise<any> {}
 }
 
 export default { RouterMiddleware };
