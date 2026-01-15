@@ -15,11 +15,13 @@ export interface ControllerOptions {
 	middlewares?: MiddlewareVariant[];
 }
 
-export function Controller(options: ControllerOptions) {
+export function Controller(options: ControllerOptions | string) {
 	return (target: { new (...args: any[]): {} }) => {
 		Reflect.defineMetadata(ROUTER_ROLE_METADATA_KEY, ROUTER_CONTROLLER_ROLE, target);
 
-		const controllerMiddlewares = options.middlewares || [];
+		const path = typeof options === 'string' ? options : options.path || '/';
+
+		const controllerMiddlewares = typeof options === 'string' ? [] : options.middlewares || [];
 		const mountedControllerMiddlewares: MountedMiddleware[] = [];
 
 		for (const controllerMiddleware of controllerMiddlewares) {
@@ -42,7 +44,7 @@ export function Controller(options: ControllerOptions) {
 		}
 
 		const mountedController: MountedController = {
-			path: options.path || '/',
+			path: path,
 			middlewares: mountedControllerMiddlewares,
 			constructor: target
 		};
