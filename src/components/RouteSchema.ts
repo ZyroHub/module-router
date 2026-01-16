@@ -18,9 +18,14 @@ export interface RouteSchemaOptions<
 	meta?: RouteSchemaMeta;
 }
 
+export interface RouterGlobalInputs {}
+
+export type RouterGlobalRequest = RouterGlobalInputs extends { request: infer R } ? R : any;
+export type RouterGlobalResponse = RouterGlobalInputs extends { response: infer R } ? R : any;
+
 export interface RouterSchemaInputs {
-	request: any;
-	response: any;
+	request: RouterGlobalRequest;
+	response: RouterGlobalResponse;
 }
 
 export type RouterSchemaRequest = RouterSchemaInputs['request'];
