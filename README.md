@@ -28,7 +28,7 @@
 
 To install the router module, use one of the following package managers:
 
-[NPM Repository](https://www.npmjs.com/package/@zyrohub/core)
+[NPM Repository](https://www.npmjs.com/package/@zyrohub/module-router)
 
 ```bash
 # npm
