@@ -23,6 +23,7 @@
 - [Creating Middleware](#creating-middleware)
     - [Using Middleware in Controllers or Routes](#using-middleware-in-controllers-or-routes)
 - [Getting generated routes](#getting-generated-routes)
+- [Declaring Request and Response types](#declaring-request-and-response-types)
 
 ## Getting Started
 
@@ -337,6 +338,22 @@ class AnotherModule extends BaseModule {
 		// using the router module
 		const routerModule = data.core.getModuleOrThrow(RouterModule);
 		console.log(routerModule.controllers);
+	}
+}
+```
+
+## Declaring Request and Response types
+
+You can declare your custom `request` and `response` types by using TypeScript module augmentation. This is useful when integrating with frameworks like Express or Fastify.
+
+```typescript
+// e.g., src/types/router.d.ts
+import '@zyrohub/module-router';
+
+declare module '@zyrohub/module-router' {
+	interface RouterGlobalInputs {
+		request: YourCustomRequestType; // e.g., Express.Request or FastifyRequest
+		response: YourCustomResponseType; // e.g., Express.Response or FastifyReply
 	}
 }
 ```
