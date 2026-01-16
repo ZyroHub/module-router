@@ -18,12 +18,17 @@ export interface RouteSchemaOptions<
 	meta?: RouteSchemaMeta;
 }
 
-export type RouterSchemaRequest = any;
-export type RouterSchemaResponse = any;
+export interface RouterSchemaInputs {
+	request: any;
+	response: any;
+}
+
+export type RouterSchemaRequest = RouterSchemaInputs['request'];
+export type RouterSchemaResponse = RouterSchemaInputs['response'];
 
 export interface RouteSchemaContext<
-	SRequest extends RouterSchemaRequest = RouterSchemaRequest,
-	SResponse extends RouterSchemaResponse = RouterSchemaResponse,
+	SRequest = RouterSchemaRequest,
+	SResponse = RouterSchemaResponse,
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
 	SParams extends ValidatorSchema = ValidatorSchema
@@ -37,8 +42,8 @@ export interface RouteSchemaContext<
 }
 
 export class RouteSchema<
-	SRequest extends RouterSchemaRequest = RouterSchemaRequest,
-	SResponse extends RouterSchemaResponse = RouterSchemaResponse,
+	SRequest = RouterSchemaRequest,
+	SResponse = RouterSchemaResponse,
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
 	SParams extends ValidatorSchema = ValidatorSchema
@@ -68,8 +73,8 @@ export class RouteSchema<
 	}
 
 	static createBase<
-		SRequest extends RouterSchemaRequest = RouterSchemaRequest,
-		SResponse extends RouterSchemaResponse = RouterSchemaResponse,
+		SRequest = RouterSchemaRequest,
+		SResponse = RouterSchemaResponse,
 		SBody extends ValidatorSchema = ValidatorSchema,
 		SQuery extends ValidatorSchema = ValidatorSchema,
 		SParams extends ValidatorSchema = ValidatorSchema
