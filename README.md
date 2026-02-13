@@ -354,6 +354,8 @@ declare module '@zyrohub/module-router' {
 	interface RouterGlobalInputs {
 		request: YourCustomRequestType; // e.g., Express.Request or FastifyRequest
 		response: YourCustomResponseType; // e.g., Express.Response or FastifyReply
+
+		data: YourCustomDataType; // Optional custom data type for context data (e.g., for storing user info after authentication)
 	}
 }
 ```

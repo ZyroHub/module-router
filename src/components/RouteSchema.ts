@@ -22,24 +22,30 @@ export interface RouterGlobalInputs {}
 
 export type RouterGlobalRequest = RouterGlobalInputs extends { request: infer R } ? R : any;
 export type RouterGlobalResponse = RouterGlobalInputs extends { response: infer R } ? R : any;
+export type RouterGlobalData = RouterGlobalInputs extends { data: infer D } ? D : any;
 
 export interface RouterSchemaInputs {
 	request: RouterGlobalRequest;
 	response: RouterGlobalResponse;
+
+	data: RouterGlobalData;
 }
 
 export type RouterSchemaRequest = RouterSchemaInputs['request'];
 export type RouterSchemaResponse = RouterSchemaInputs['response'];
+export type RouterSchemaData = RouterSchemaInputs['data'];
 
 export interface RouteSchemaContext<
 	SRequest = RouterSchemaRequest,
 	SResponse = RouterSchemaResponse,
+	SData = RouterSchemaData,
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
 	SParams extends ValidatorSchema = ValidatorSchema
 > {
 	request: SRequest;
 	response: SResponse;
+	data: SData;
 
 	body: SBody extends ValidatorSchema ? InferSchemaType<SBody> : undefined;
 	query: SQuery extends ValidatorSchema ? InferSchemaType<SQuery> : undefined;
@@ -49,6 +55,7 @@ export interface RouteSchemaContext<
 export class RouteSchema<
 	SRequest = RouterSchemaRequest,
 	SResponse = RouterSchemaResponse,
+	SData = RouterSchemaData,
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
 	SParams extends ValidatorSchema = ValidatorSchema
@@ -61,9 +68,10 @@ export class RouteSchema<
 
 	meta: RouteSchemaMeta = {};
 
-	context: RouteSchemaContext<SRequest, SResponse, SBody, SQuery, SParams> = {} as RouteSchemaContext<
+	context: RouteSchemaContext<SRequest, SResponse, SData, SBody, SQuery, SParams> = {} as RouteSchemaContext<
 		SRequest,
 		SResponse,
+		SData,
 		SBody,
 		SQuery,
 		SParams
@@ -80,6 +88,7 @@ export class RouteSchema<
 	static createBase<
 		SRequest = RouterSchemaRequest,
 		SResponse = RouterSchemaResponse,
+		SData = RouterSchemaData,
 		SBody extends ValidatorSchema = ValidatorSchema,
 		SQuery extends ValidatorSchema = ValidatorSchema,
 		SParams extends ValidatorSchema = ValidatorSchema
@@ -88,7 +97,7 @@ export class RouteSchema<
 			IBody extends ValidatorSchema = ValidatorSchema,
 			IQuery extends ValidatorSchema = ValidatorSchema,
 			IParams extends ValidatorSchema = ValidatorSchema
-		> extends RouteSchema<SRequest, SResponse, SBody & IBody, SQuery & IQuery, SParams & IParams> {
+		> extends RouteSchema<SRequest, SResponse, SData, SBody & IBody, SQuery & IQuery, SParams & IParams> {
 			constructor(input: RouteSchemaOptions<IBody, IQuery, IParams> = {}) {
 				super({
 					...((input.body || options.body) && {
