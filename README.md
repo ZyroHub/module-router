@@ -11,17 +11,17 @@
 - [ZyroHub - Router Module](#zyrohub---router-module)
 - [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
-	- [Using Module and Registering Controllers](#using-module-and-registering-controllers)
-	- [TypeScript Configuration](#typescript-configuration)
+    - [Using Module and Registering Controllers](#using-module-and-registering-controllers)
+    - [TypeScript Configuration](#typescript-configuration)
 - [Creating a Controller](#creating-a-controller)
 - [Route Schema](#route-schema)
 - [Automatic Validation](#automatic-validation)
-	- [Using Zod](#using-zod)
-	- [Using Yup](#using-yup)
-	- [Using Class-Validator](#using-class-validator)
+    - [Using Zod](#using-zod)
+    - [Using Yup](#using-yup)
+    - [Using Class-Validator](#using-class-validator)
 - [HttpResponse](#httpresponse)
 - [Creating Middleware](#creating-middleware)
-	- [Using Middleware in Controllers or Routes](#using-middleware-in-controllers-or-routes)
+    - [Using Middleware in Controllers or Routes](#using-middleware-in-controllers-or-routes)
 - [Getting generated routes](#getting-generated-routes)
 - [Declaring Request and Response types](#declaring-request-and-response-types)
 
@@ -283,7 +283,7 @@ export class AuthMiddleware extends RouterMiddleware {
 			return HttpResponse.error(401, 'INVALID_TOKEN', { message: 'Invalid or missing authorization token' });
 		}
 
-		context.data.user = await this.authService.getUserFromToken(authHeader); // You can store user info in context data for later use in route handlers
+		context.state.user = await this.authService.getUserFromToken(authHeader); // You can store user info in context state for later use in route handlers
 
 		// automatically proceed to the next middleware or route handler
 	}
@@ -357,7 +357,7 @@ declare module '@zyrohub/module-router' {
 		request: YourCustomRequestType; // e.g., Express.Request or FastifyRequest
 		response: YourCustomResponseType; // e.g., Express.Response or FastifyReply
 
-		data: YourCustomDataType; // Optional custom data type for context data (e.g., for storing user info after authentication)
+		state: YourCustomStateType; // Optional custom state type for context data (e.g., for storing user info after authentication)
 	}
 }
 ```

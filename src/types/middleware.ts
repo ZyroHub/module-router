@@ -1,5 +1,5 @@
 import { RouterMiddleware } from '@/components/Middleware.js';
-import { RouterGlobalData, RouterGlobalRequest, RouterGlobalResponse } from '@/components/RouteSchema.js';
+import { RouterGlobalState, RouterGlobalRequest, RouterGlobalResponse } from '@/components/RouteSchema.js';
 
 export type RouterMiddlewareClass<T extends RouterMiddleware = RouterMiddleware> = {
 	new (...args: any[]): T;
@@ -18,11 +18,11 @@ export type MiddlewareVariant = RouterMiddlewareClass | MountedMiddleware;
 export interface RouterMiddlewareContext<
 	SRequest = RouterGlobalRequest,
 	SResponse = RouterGlobalResponse,
-	SData = RouterGlobalData
+	SState = RouterGlobalState
 > {
 	request: SRequest;
 	response: SResponse;
-	data: SData;
+	state: SState;
 
 	body: any;
 	query: any;
