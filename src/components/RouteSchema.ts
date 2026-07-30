@@ -6,6 +6,13 @@ export interface RouteSchemaMeta {
 	description?: string;
 }
 
+export type RouteSchemaContentType =
+	| 'application/json'
+	| 'multipart/form-data'
+	| 'application/x-www-form-urlencoded'
+	| 'application/octet-stream'
+	| 'text/plain';
+
 export interface RouteSchemaFilesField {
 	maxSize?: number;
 	minCount?: number;
@@ -35,9 +42,9 @@ export interface RouteSchemaOptions<
 	query?: SQuery;
 	params?: SParams;
 
-	multipart?: boolean;
-
 	files?: RouteSchemaFiles;
+
+	consumes?: RouteSchemaContentType[];
 
 	meta?: RouteSchemaMeta;
 }
@@ -94,7 +101,7 @@ export class RouteSchema<
 
 	meta: RouteSchemaMeta = {};
 
-	isMultipart: boolean = false;
+	consumes: RouteSchemaContentType[] = [];
 
 	context: RouteSchemaContext<SRequest, SResponse, SState, SBody, SQuery, SParams> = {} as RouteSchemaContext<
 		SRequest,
@@ -112,7 +119,7 @@ export class RouteSchema<
 
 		if (options.meta) this.meta = options.meta;
 
-		if (options.multipart !== undefined) this.isMultipart = options.multipart;
+		if (options.consumes) this.consumes = options.consumes;
 
 		if (options.files) this.validators.files = options.files;
 	}
@@ -160,9 +167,9 @@ export class RouteSchema<
 						}
 					}),
 
-					...(input.multipart !== undefined
-						? { multipart: input.multipart }
-						: options.multipart !== undefined && { multipart: options.multipart }),
+					...((input.consumes || options.consumes) && {
+						consumes: [...(options.consumes || []), ...(input.consumes || [])]
+					}),
 
 					...((input.files || options.files) && {
 						files: {
@@ -170,10 +177,7 @@ export class RouteSchema<
 								...options.files?.options,
 								...input.files?.options
 							},
-							fields: [
-								...(options.files?.fields ? options.files.fields : []),
-								...(input.files?.fields ? input.files.fields : [])
-							]
+							fields: [...(options.files?.fields || []), ...(input.files?.fields || [])]
 						}
 					})
 				});
