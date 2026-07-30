@@ -19,6 +19,7 @@
     - [Using Zod](#using-zod)
     - [Using Yup](#using-yup)
     - [Using Class-Validator](#using-class-validator)
+- [Receiving Files](#receiving-files)
 - [HttpResponse](#httpresponse)
 - [Creating Middleware](#creating-middleware)
     - [Using Middleware in Controllers or Routes](#using-middleware-in-controllers-or-routes)
