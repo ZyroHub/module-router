@@ -6,6 +6,26 @@ export interface RouteSchemaMeta {
 	description?: string;
 }
 
+export interface RouteSchemaFilesField {
+	maxSize?: number;
+	minCount?: number;
+	maxCount?: number;
+	mimeTypes?: string[];
+	required?: boolean;
+}
+
+export interface RouteSchemaFilesOptions {
+	maxFiles?: number;
+	maxFileSize?: number;
+	mimeTypes?: string[];
+	any?: boolean;
+}
+
+export interface RouteSchemaFiles {
+	fields?: RouteSchemaFilesField[];
+	options?: RouteSchemaFilesOptions;
+}
+
 export interface RouteSchemaOptions<
 	SBody extends ValidatorSchema = ValidatorSchema,
 	SQuery extends ValidatorSchema = ValidatorSchema,
@@ -14,6 +34,10 @@ export interface RouteSchemaOptions<
 	body?: SBody;
 	query?: SQuery;
 	params?: SParams;
+
+	multipart?: boolean;
+
+	files?: RouteSchemaFiles;
 
 	meta?: RouteSchemaMeta;
 }
@@ -64,9 +88,13 @@ export class RouteSchema<
 		body?: SBody;
 		query?: SQuery;
 		params?: SParams;
+
+		files?: RouteSchemaFiles;
 	} = {};
 
 	meta: RouteSchemaMeta = {};
+
+	isMultipart: boolean = false;
 
 	context: RouteSchemaContext<SRequest, SResponse, SState, SBody, SQuery, SParams> = {} as RouteSchemaContext<
 		SRequest,
@@ -83,6 +111,10 @@ export class RouteSchema<
 		if (options.params) this.validators.params = options.params;
 
 		if (options.meta) this.meta = options.meta;
+
+		if (options.multipart !== undefined) this.isMultipart = options.multipart;
+
+		if (options.files) this.validators.files = options.files;
 	}
 
 	static createBase<
@@ -125,6 +157,23 @@ export class RouteSchema<
 						meta: {
 							...options.meta,
 							...input.meta
+						}
+					}),
+
+					...(input.multipart !== undefined
+						? { multipart: input.multipart }
+						: options.multipart !== undefined && { multipart: options.multipart }),
+
+					...((input.files || options.files) && {
+						files: {
+							options: {
+								...options.files?.options,
+								...input.files?.options
+							},
+							fields: [
+								...(options.files?.fields ? options.files.fields : []),
+								...(input.files?.fields ? input.files.fields : [])
+							]
 						}
 					})
 				});
