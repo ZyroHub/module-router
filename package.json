@@ -1,6 +1,6 @@
 {
 	"name": "@zyrohub/module-router",
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"author": "DMVMarcio",
 	"type": "module",
 	"main": "./dist/index.js",
