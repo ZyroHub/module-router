@@ -123,12 +123,14 @@ export class RouteSchema<
 
 		if (options.meta) this.meta = options.meta;
 
-		if (options.consumes) this.consumes = options.consumes;
-
 		if (options.files) {
 			this.validators.files = options.files;
+		}
 
-			if (!options.consumes) this.consumes = ['multipart/form-data'];
+		if (options.consumes) {
+			this.consumes = options.consumes;
+		} else {
+			this.consumes = options.files ? ['multipart/form-data'] : ['application/json'];
 		}
 	}
 
@@ -176,7 +178,7 @@ export class RouteSchema<
 					}),
 
 					...((input.consumes || options.consumes) && {
-						consumes: [...(options.consumes || []), ...(input.consumes || [])]
+						consumes: Array.from(new Set([...(options.consumes || []), ...(input.consumes || [])]))
 					}),
 
 					...((input.files || options.files) && {

@@ -117,9 +117,9 @@ class StoreController {
 const LoginSchema = new RouteSchema({
 	body: {}, // see supported validation below
 	query: {}, // see supported validation below
-	params: {} // see supported validation below
+	params: {}, // see supported validation below
 
-	consumes: [] // filter accepted content types (default: ["application/json"])
+	consumes: [], // filter accepted content types (default: ["application/json"])
 
 	files: { // see files configuration below
 		fields: [],
