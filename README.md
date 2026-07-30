@@ -118,6 +118,13 @@ const LoginSchema = new RouteSchema({
 	query: {}, // see supported validation below
 	params: {} // see supported validation below
 
+	consumes: [] // filter accepted content types (default: ["application/json"])
+
+	files: { // see files configuration below
+		fields: [],
+		options: {}
+	},
+
     // Optional metadata for documentation purposes
     meta: {
         tags: ['auth', 'login'],
@@ -143,6 +150,8 @@ class AuthController {
 		const body = context.request.body; // Access typed and validated body
 		const query = context.request.query; // Access typed and validated query
 		const params = context.request.params; // Access typed and validated params
+
+		const files = context.files; // Access typed and validated files data
 
 		// Your login logic here
 
@@ -224,6 +233,34 @@ const LoginSchema = new RouteSchema({
 	body: LoginBody,
 	query: LoginQuery,
 	params: LoginParams
+});
+```
+
+## Receiving Files
+
+```typescript
+const UpdateProfileSchema = new RouteSchema({
+	body: UpdateProfileBody,
+
+	consumes: ['multipart/form-data'], // if no value is defined, the consumer will be defined automatically when "files" is defined
+
+	files: {
+		fields: [
+			{ // file specific options
+				name: 'avatar',
+				maxSize: 20 * 1024 * 1024, // 20 MB (single limit per file)
+				minCount: 1,
+				maxCount: 1,
+				mimeTypes: ['image/png']
+			}
+		],
+		options: { // general options for all files
+			maxFiles: 1, // total max files
+			maxFileSize: 10 * 1024 * 1024, // 10 MB (limit per file)
+			mimeTypes: ['image/png'] // accepted mime types
+			any: false // if you want to receive undocumented files in "fields"
+		}
+	}
 });
 ```
 

@@ -14,11 +14,11 @@ export type RouteSchemaContentType =
 	| 'text/plain';
 
 export interface RouteSchemaFilesField {
+	name: string;
 	maxSize?: number;
 	minCount?: number;
 	maxCount?: number;
 	mimeTypes?: string[];
-	required?: boolean;
 }
 
 export interface RouteSchemaFilesOptions {
@@ -101,7 +101,7 @@ export class RouteSchema<
 
 	meta: RouteSchemaMeta = {};
 
-	consumes: RouteSchemaContentType[] = [];
+	consumes: RouteSchemaContentType[] = ['application/json'];
 
 	context: RouteSchemaContext<SRequest, SResponse, SState, SBody, SQuery, SParams> = {} as RouteSchemaContext<
 		SRequest,
@@ -121,7 +121,11 @@ export class RouteSchema<
 
 		if (options.consumes) this.consumes = options.consumes;
 
-		if (options.files) this.validators.files = options.files;
+		if (options.files) {
+			this.validators.files = options.files;
+
+			if (!options.consumes) this.consumes = ['multipart/form-data'];
+		}
 	}
 
 	static createBase<
