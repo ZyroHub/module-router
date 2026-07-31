@@ -1,6 +1,5 @@
 import { InferSchemaType, ValidatorSchema } from '@zyrohub/utilities';
-
-import { RouteSchemaContextFiles } from './RouteSchemaContextFiles.js';
+import { Readable } from 'node:stream';
 
 export interface RouteSchemaMeta {
 	tags?: string[];
@@ -68,6 +67,17 @@ export type RouterSchemaRequest = RouterSchemaInputs['request'];
 export type RouterSchemaResponse = RouterSchemaInputs['response'];
 export type RouterSchemaState = RouterSchemaInputs['state'];
 
+export interface RouteSchemaContextFile {
+	fieldName: string;
+	fileName: string;
+	mimeType: string;
+	encoding: string;
+
+	stream: Readable;
+	toBuffer(): Promise<Buffer>;
+	saveTo(destinationPath: string): Promise<void>;
+}
+
 export interface RouteSchemaContext<
 	SRequest = RouterSchemaRequest,
 	SResponse = RouterSchemaResponse,
@@ -84,7 +94,10 @@ export interface RouteSchemaContext<
 	query: SQuery extends ValidatorSchema ? InferSchemaType<SQuery> : undefined;
 	params: SParams extends ValidatorSchema ? InferSchemaType<SParams> : undefined;
 
-	files: RouteSchemaContextFiles;
+	processMultipart: (file_callback: (file: RouteSchemaContextFile) => any) => Promise<{
+		body: SBody extends ValidatorSchema ? InferSchemaType<SBody> : undefined;
+		files: RouteSchemaContextFile[];
+	}>;
 }
 
 export class RouteSchema<

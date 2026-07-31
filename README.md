@@ -121,17 +121,18 @@ const LoginSchema = new RouteSchema({
 
 	consumes: [], // filter accepted content types (default: ["application/json"])
 
-	files: { // see files configuration below
+	files: {
+		// see files configuration below
 		fields: [],
 		options: {}
 	},
 
-    // Optional metadata for documentation purposes
-    meta: {
-        tags: ['auth', 'login'],
-        summary: 'User login endpoint',
-        description: 'Endpoint for user login that validates input data',
-    }
+	// Optional metadata for documentation purposes
+	meta: {
+		tags: ['auth', 'login'],
+		summary: 'User login endpoint',
+		description: 'Endpoint for user login that validates input data'
+	}
 });
 ```
 
@@ -151,8 +152,6 @@ class AuthController {
 		const body = context.request.body; // Access typed and validated body
 		const query = context.request.query; // Access typed and validated query
 		const params = context.request.params; // Access typed and validated params
-
-		const files = context.files; // Access typed and validated files data
 
 		// Your login logic here
 
@@ -263,6 +262,37 @@ const UpdateProfileSchema = new RouteSchema({
 		}
 	}
 });
+```
+
+Using the above schema, when receiving files (multipart/form-data), you will have to execute the `processMultipart` method yourself, to validate the "body" schema.
+
+```typescript
+import { Controller, Post, HttpResponse } from '@zyrohub/module-router';
+
+import { UpdateProfileSchema } from './schemas/UpdateProfileSchema.js';
+
+@Controller({
+	path: '/auth'
+})
+class ProfileController {
+	@Post('/update', UpdateProfileSchema)
+	login(context: typeof UpdateProfileSchema.context) {
+		const query = context.request.query; // Access typed and validated query
+		const params = context.request.params; // Access typed and validated params
+
+		// This will validate the body and uploaded files
+		await context.processMultipart(async (file) => {
+			console.log(await file.toBuffer()); // get file full buffer
+			console.log(file.stream); // file stream
+			await file.saveTo('/path/file.txt'); // save file
+			console.log(file); // any other useful information (e.g., fieldName, fileName, mimeType...)
+		});
+
+		const body = context.request.body; // Access typed and validated body
+
+		return HttpResponse.success();
+	}
+}
 ```
 
 ## HttpResponse
