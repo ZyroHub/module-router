@@ -104,8 +104,8 @@ class StoreController {
 		private readonly productsRepository: ProductsRepository
 	) {}
 
-	@Get('/products')
-	getProducts(context: StoreProductsSchema) {
+	@Get('/products', StoreProductsSchema)
+	getProducts(context: typeof StoreProductsSchema.context) {
 		return HttpResponse.success({ products: this.productsRepository.findAll() });
 	}
 }
