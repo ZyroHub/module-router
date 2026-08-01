@@ -118,7 +118,7 @@ export class RouteSchema<
 
 	meta: RouteSchemaMeta = {};
 
-	consumes: RouteSchemaContentType[] = ['application/json'];
+	consumes: RouteSchemaContentType[] = [];
 
 	context: RouteSchemaContext<SRequest, SResponse, SState, SBody, SQuery, SParams> = {} as RouteSchemaContext<
 		SRequest,
@@ -142,8 +142,10 @@ export class RouteSchema<
 
 		if (options.consumes) {
 			this.consumes = options.consumes;
-		} else {
-			this.consumes = options.files ? ['multipart/form-data'] : ['application/json'];
+		} else if (options.files) {
+			this.consumes = ['multipart/form-data'];
+		} else if (options.body) {
+			this.consumes = ['application/json'];
 		}
 	}
 
