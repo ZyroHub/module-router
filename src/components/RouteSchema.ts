@@ -1,4 +1,4 @@
-import { InferSchemaType, ValidatorSchema } from '@zyrohub/utilities';
+import { InferSchemaType, ValidatorSchema } from '../index.js';
 import { Readable } from 'node:stream';
 
 export interface RouteSchemaMeta {
