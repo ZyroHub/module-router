@@ -1,6 +1,6 @@
 {
 	"name": "@zyrohub/module-router",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"author": "DMVMarcio",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -41,7 +41,7 @@
 		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
-		"@zyrohub/core": "^1.1.7"
+		"@zyrohub/core": "^1.1.8"
 	},
 	"peerDependenciesMeta": {
 		"@zyrohub/core": {
