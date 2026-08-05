@@ -15,7 +15,9 @@
     - [TypeScript Configuration](#typescript-configuration)
 - [Creating a Controller](#creating-a-controller)
 - [Route Schema](#route-schema)
+    - [Creating Schema](#creating-schema)
     - [Extending a Schema (`createBase`)](#extending-a-schema-createbase)
+    - [Simple Routes (Without Schema)](#simple-routes-without-schema)
 - [Automatic Validation](#automatic-validation)
     - [Using Zod](#using-zod)
     - [Using Yup](#using-yup)
@@ -114,6 +116,8 @@ class StoreController {
 
 ## Route Schema
 
+### Creating Schema
+
 ```typescript
 const LoginSchema = new RouteSchema({
 	body: {}, // see supported validation below
@@ -208,6 +212,32 @@ export const LogoutSchema = new AuthBase({
 		summary: 'Logout user'
 	}
 });
+```
+
+### Simple Routes (Without Schema)
+
+For simple routes that do not require validation of request body, query parameters, or route parameters, you do not necessarily need to create a `RouteSchema`. 
+
+Instead, you can type the route handler context using `RouteSchemaContext` directly. This will provide a generic context type with empty/generic body, query, and params.
+
+> [!IMPORTANT]
+> Although creating a `RouteSchema` is optional for simple routes, it is **highly recommended** to define one for all routes to enable automatic documentation generation (such as OpenAPI/Swagger).
+
+#### Example
+
+```typescript
+import { Controller, Get, RouteSchemaContext, HttpResponse } from '@zyrohub/module-router';
+
+@Controller({
+	path: '/store'
+})
+export class StoreController {
+	@Get('/products')
+	async getProducts(context: RouteSchemaContext) {
+		// context is typed with a generic request, response, and state structure
+		return HttpResponse.success({ products: [] });
+	}
+}
 ```
 
 ## Automatic Validation
