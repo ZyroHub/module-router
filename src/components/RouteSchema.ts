@@ -161,29 +161,33 @@ export class RouteSchema<
 			IBody extends ValidatorSchema = ValidatorSchema,
 			IQuery extends ValidatorSchema = ValidatorSchema,
 			IParams extends ValidatorSchema = ValidatorSchema
-		> extends RouteSchema<SRequest, SResponse, SState, SBody & IBody, SQuery & IQuery, SParams & IParams> {
+		> extends RouteSchema<
+			SRequest,
+			SResponse,
+			SState,
+			[ValidatorSchema] extends [IBody] ? SBody : IBody,
+			[ValidatorSchema] extends [IQuery] ? SQuery : IQuery,
+			[ValidatorSchema] extends [IParams] ? SParams : IParams
+		> {
 			constructor(input: RouteSchemaOptions<IBody, IQuery, IParams> = {}) {
 				super({
-					...((input.body || options.body) && {
-						body: {
-							...options.body,
-							...input.body
-						} as SBody & IBody
-					}),
+					...(input.body !== undefined
+						? { body: input.body }
+						: options.body !== undefined
+						? { body: options.body }
+						: {}),
 
-					...((input.query || options.query) && {
-						query: {
-							...options.query,
-							...input.query
-						} as SQuery & IQuery
-					}),
+					...(input.query !== undefined
+						? { query: input.query }
+						: options.query !== undefined
+						? { query: options.query }
+						: {}),
 
-					...((input.params || options.params) && {
-						params: {
-							...options.params,
-							...input.params
-						} as SParams & IParams
-					}),
+					...(input.params !== undefined
+						? { params: input.params }
+						: options.params !== undefined
+						? { params: options.params }
+						: {}),
 
 					...((input.meta || options.meta) && {
 						meta: {
@@ -205,7 +209,7 @@ export class RouteSchema<
 							fields: [...(options.files?.fields || []), ...(input.files?.fields || [])]
 						}
 					})
-				});
+				} as any);
 			}
 		};
 	}

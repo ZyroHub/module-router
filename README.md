@@ -15,6 +15,7 @@
     - [TypeScript Configuration](#typescript-configuration)
 - [Creating a Controller](#creating-a-controller)
 - [Route Schema](#route-schema)
+    - [Extending a Schema (`createBase`)](#extending-a-schema-createbase)
 - [Automatic Validation](#automatic-validation)
     - [Using Zod](#using-zod)
     - [Using Yup](#using-yup)
@@ -158,6 +159,55 @@ class AuthController {
 		return HttpResponse.success({ token: '<generated_session_token>' });
 	}
 }
+```
+
+### Extending a Schema (`createBase`)
+
+You can create a base route schema using `RouteSchema.createBase(options)` to share common validations, metadata, or media-types across multiple routes.
+
+This returns a custom subclass of `RouteSchema` that you can instantiate (using `new`) with route-specific overrides.
+
+#### How Properties are Resolved:
+* **Overridden:** `body`, `query`, and `params` are validation schemas and cannot be merged. If you define a schema in the final instance, it completely overrides the one defined in the base schema. If not defined, the base schema's validator is used.
+* **Merged:**
+  * `meta`: Metadata options (like `tags`, `summary`, and `description`) are merged together.
+  * `consumes`: Media-types are combined and deduplicated.
+  * `files`: Uploaded fields are combined, and general file options are merged.
+
+#### Example
+
+```typescript
+import { RouteSchema } from '@zyrohub/module-router';
+import { z } from 'zod';
+
+// 1. Define a base schema with common settings and validations
+export const AuthBase = RouteSchema.createBase({
+	meta: {
+		tags: ['Auth']
+	},
+	query: z.object({
+		tenantId: z.string().uuid()
+	})
+});
+
+// 2. Derive schemas from the base
+// LoginSchema overrides the "body", but inherits "meta.tags" and "query" (tenantId)
+export const LoginSchema = new AuthBase({
+	body: z.object({
+		email: z.string().email(),
+		password: z.string().max(64)
+	}),
+	meta: {
+		summary: 'Login user'
+	}
+});
+
+// LogoutSchema doesn't override body or query, so it uses the base query validator and inherits "meta.tags"
+export const LogoutSchema = new AuthBase({
+	meta: {
+		summary: 'Logout user'
+	}
+});
 ```
 
 ## Automatic Validation
