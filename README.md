@@ -172,6 +172,7 @@ You can create a base route schema using `RouteSchema.createBase(options)` to sh
 This returns a custom subclass of `RouteSchema` that you can instantiate (using `new`) with route-specific overrides.
 
 #### How Properties are Resolved:
+
 * **Overridden:** `body`, `query`, and `params` are validation schemas and cannot be merged. If you define a schema in the final instance, it completely overrides the one defined in the base schema. If not defined, the base schema's validator is used.
 * **Merged:**
   * `meta`: Metadata options (like `tags`, `summary`, and `description`) are merged together.
