@@ -226,7 +226,7 @@ Instead, you can type the route handler context using `RouteSchemaContext` direc
 #### Example
 
 ```typescript
-import { Controller, Get, RouteSchemaContext, HttpResponse } from '@zyrohub/module-router';
+import { Controller, Get, type RouteSchemaContext, HttpResponse } from '@zyrohub/module-router';
 
 @Controller({
 	path: '/store'
