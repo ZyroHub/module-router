@@ -19,7 +19,7 @@ export interface RouterModuleLoaderOptions {
 export interface RouterModuleOptions {
 	loader?: RouterModuleLoaderOptions;
 
-	controllers?: { new (): any }[];
+	controllers?: { new (...args: any[]): any }[];
 }
 
 @Module()
